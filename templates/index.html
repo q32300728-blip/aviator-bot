@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>Live Data Tracker</title>
+    <style>
+        body { background: #0f172a; color: #fff; font-family: Arial; text-align: center; padding-top: 50px; }
+        .box { background: #1e293b; padding: 20px; border-radius: 10px; display: inline-block; width: 300px; }
+        .multiplier { font-size: 35px; color: #4ade80; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>Live Status</h2>
+        <div id="status" style="color: #facc15;">Connecting...</div>
+        <div class="multiplier" id="multiplier">1.00x</div>
+        <h3>Recent History</h3>
+        <ul id="history-list" style="list-style: none; padding: 0;"></ul>
+    </div>
+
+    <script>
+        // প্রতি ১ সেকেন্ড পর পর সার্ভার থেকে লাইভ ডাটা নিয়ে আসা
+        setInterval(async () => {
+            try {
+                let response = await fetch('/get-live-data');
+                let data = await response.json();
+                
+                document.getElementById('status').innerText = data.status;
+                document.getElementById('multiplier').innerText = data.multiplier;
+                
+                let historyHtml = '';
+                data.history.forEach(item => {
+                    historyHtml += `<li>${item}</li>`;
+                });
+                document.getElementById('history-list').innerHTML = historyHtml;
+            } catch (error) {
+                console.error("Error fetching live data:", error);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
