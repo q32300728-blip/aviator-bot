@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aviator History Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #0e1117; color: #fff; text-align: center; padding: 20px; }
+        .card { background: #161b22; padding: 20px; border-radius: 10px; display: inline-block; width: 300px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+        h1 { color: #58a6ff; font-size: 20px; }
+        .history-list { list-style: none; padding: 0; margin-top: 15px; max-height: 300px; overflow-y: auto; }
+        .history-item { background: #21262d; margin: 5px 0; padding: 10px; border-radius: 5px; font-size: 18px; font-weight: bold; color: #2ea043; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Previous Rounds History</h1>
+        <ul id="historyList" class="history-list">
+            <li class="history-item">Waiting for data...</li>
+        </ul>
+    </div>
+
+    <script>
+        async function fetchHistoryData() {
+            try {
+                const response = await fetch('/get-live-data');
+                const data = await response.json();
+                
+                const listElement = document.getElementById('historyList');
+                if (data.history && data.history.length > 0) {
+                    listElement.innerHTML = '';
+                    data.history.forEach((item, index) => {
+                        const li = document.createElement('li');
+                        li.className = 'history-item';
+                        li.innerText = `${index + 1}. ${item}`;
+                        listElement.appendChild(li);
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching history:', error);
+            }
+        }
+
+        setInterval(fetchHistoryData, 2000);
+    </script>
+</body>
+</html>
