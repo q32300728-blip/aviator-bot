@@ -1,0 +1,10 @@
+<script>
+    const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+    const ws = new WebSocket(protocol + window.location.host + '/ws');
+
+    ws.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        document.getElementById('status').innerText = data.status;
+        document.getElementById('multiplier').innerText = data.multiplier;
+    };
+</script>
