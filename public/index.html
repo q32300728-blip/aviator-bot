@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMC & ICT Pro Scanner Bot</title>
+    <style>
+        body { background-color: #0b0e14; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding-top: 30px; }
+        .scanner-card { border: 2px solid #00ffcc; border-radius: 20px; display: inline-block; padding: 25px; background: #131722; box-shadow: 0 0 25px rgba(0, 255, 204, 0.4); max-width: 450px; width: 90%; }
+        h1 { color: #00ffcc; font-size: 20px; margin-bottom: 5px; }
+        .sub-title { font-size: 11px; color: #888; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+        .control-group { margin-bottom: 15px; display: flex; justify-content: space-between; gap: 10px; }
+        select, button { padding: 10px; border-radius: 8px; border: 1px solid #00ffcc; background: #1e222d; color: #fff; font-weight: bold; cursor: pointer; flex: 1; }
+        button { background: #00ffcc; color: #0b0e14; }
+        .status { font-size: 13px; color: #ffaa00; margin-bottom: 12px; font-weight: bold; }
+        .concept-box { background: #1e222d; padding: 10px; border-radius: 8px; margin-bottom: 12px; font-size: 13px; text-align: left; border-left: 4px solid #00ffcc; }
+        .reasoning { font-size: 12px; color: #ccc; margin-bottom: 15px; text-align: left; font-style: italic; }
+        .signal { font-size: 28px; font-weight: bold; margin: 10px 0; padding: 8px; border-radius: 8px; }
+        .call { color: #00ffcc; background: rgba(0, 255, 204, 0.1); }
+        .put { color: #ff3366; background: rgba(255, 51, 102, 0.1); }
+        .accuracy { font-size: 12px; color: #00ffcc; margin-top: 8px; }
+    </style>
+</head>
+<body>
+
+    <div class="scanner-card">
+        <h1>PROFIT HACKER BOT</h1>
+        <div class="sub-title">SMC & ICT Institutional Engine</div>
+
+        <!-- কোটক্সের কারেন্সি লিস্ট সহ ড্রপডাউন -->
+        <div class="control-group">
+            <select id="currencySelect">
+                <option value="NZD/JPY (OTC)">NZD/JPY (OTC)</option>
+                <option value="USD/ARS (OTC)">USD/ARS (OTC)</option>
+                <option value="NZD/CAD (OTC)">NZD/CAD (OTC)</option>
+                <option value="NZD/CHF (OTC)">NZD/CHF (OTC)</option>
+                <option value="USD/INR (OTC)">USD/INR (OTC)</option>
+                <option value="USD/PHP (OTC)">USD/PHP (OTC)</option>
+                <option value="USD/BDT (OTC)">USD/BDT (OTC)</option>
+                <option value="USD/IDR (OTC)">USD/IDR (OTC)</option>
+                <option value="USD/BRL (OTC)">USD/BRL (OTC)</option>
+                <option value="EUR/JPY">EUR/JPY</option>
+                <option value="NZD/USD (OTC)">NZD/USD (OTC)</option>
+                <option value="AUD/JPY">AUD/JPY</option>
+                <option value="GBP/USD">GBP/USD</option>
+                <option value="EUR/AUD">EUR/AUD</option>
+                <option value="EUR/USD">EUR/USD</option>
+                <option value="USD/JPY">USD/JPY</option>
+                <option value="GBP/CAD">GBP/CAD</option>
+                <option value="USD/COP (OTC)">USD/COP (OTC)</option>
+                <option value="EUR/GBP">EUR/GBP</option>
+                <option value="USD/CHF">USD/CHF</option>
+                <option value="AUD/CAD">AUD/CAD</option>
+                <option value="EUR/NZD (OTC)">EUR/NZD (OTC)</option>
+                <option value="AUD/CHF">AUD/CHF</option>
+                <option value="CHF/JPY">CHF/JPY</option>
+                <option value="USD/EGP (OTC)">USD/EGP (OTC)</option>
+                <option value="USD/NGN (OTC)">USD/NGN (OTC)</option>
+                <option value="USD/PKR (OTC)">USD/PKR (OTC)</option>
+                <option value="EUR/CHF">EUR/CHF</option>
+                <option value="GBP/CHF">GBP/CHF</option>
+                <option value="AUD/NZD (OTC)">AUD/NZD (OTC)</option>
+                <option value="USD/ZAR (OTC)">USD/ZAR (OTC)</option>
+            </select>
+            <button id="toggleBtn" onclick="toggleBot()">STOP BOT</button>
+        </div>
+
+        <div class="status" id="status">SCANNING MARKET STRUCTURE...</div>
+        
+        <div class="concept-box" id="conceptBox">
+            Waiting for institutional setup match...
+        </div>
+
+        <div class="reasoning" id="reasoningBox">
+            Analyzing Order Blocks, FVG, and Liquidity Pools...
+        </div>
+
+        <div class="signal" id="signalText">WAITING</div>
+        <div class="accuracy" id="accuracyText">Accuracy: --%</div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        let isRunning = true;
+
+        function toggleBot() {
+            isRunning = !isRunning;
+            const btn = document.getElementById('toggleBtn');
+            if (isRunning) {
+                btn.innerText = "STOP BOT";
+                btn.style.background = "#00ffcc";
+                document.getElementById('status').innerText = "SCANNING MARKET STRUCTURE...";
+            } else {
+                btn.innerText = "START BOT";
+                btn.style.background = "#ff3366";
+                document.getElementById('status').innerText = "BOT IS PAUSED";
+                document.getElementById('signalText').innerText = "PAUSED";
+                document.getElementById('signalText').className = "signal";
+            }
+        }
+
+        socket.on('signalUpdate', (data) => {
+            if (!isRunning) return;
+
+            const selectedCurrency = document.getElementById('currencySelect').value;
+            document.getElementById('status').innerText = `Active Asset: ${selectedCurrency} (1M Chart)`;
+            document.getElementById('conceptBox').innerHTML = `<b>Trigger Concept:</b><br>${data.concept}`;
+            document.getElementById('reasoningBox').innerHTML = `<b>Human Logic:</b> ${data.reasoning}`;
+            
+            const sigElement = document.getElementById('signalText');
+            sigElement.innerText = data.signal;
+            sigElement.className = 'signal ' + (data.signal.includes('CALL') ? 'call' : 'put');
+            
+            document.getElementById('accuracyText').innerText = `Estimated Accuracy: ${data.confidence}%`;
+        });
+    </script>
+</body>
+</html>
