@@ -1,4 +1,0 @@
-git+https://github.com/shubhams-code/quotexapi.x
-streamlit
-pandas
-requests
