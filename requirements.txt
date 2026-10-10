@@ -1,0 +1,4 @@
+git+https://github.com/MarselBogdantsev/quotexapi.git
+streamlit
+pandas
+requests
