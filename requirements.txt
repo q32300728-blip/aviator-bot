@@ -1,0 +1,4 @@
+quotexapi
+streamlit
+pandas
+requests
